@@ -1,3 +1,16 @@
 <resources>
-    <string name="app_name">oneproof verifydummy app</string>
+    <string name="app_name">OneProof Verification Trigger</string>
+    <string name="trigger_verification">Verify with OneProof</string>
+    <string name="verify_again">Verify Again</string>
+    <string name="start_verification">Start Verification</string>
+    <string name="verification_successful">Verification Successful</string>
+    <string name="verification_failed">Verification Failed</string>
+    <string name="result_label">Result:</string>
+    <string name="no_result_received">No result received</string>
+    <string name="no_status">No status</string>
+    <string name="welcome_message">Welcome to OneProof Verification</string>
+    <string name="welcome_description">Tap the button below to start the verification process</string>
+    <string name="verification_result_awaited">Verification Result</string>
+    <string name="verification_result_awaited_desc">Verification result is shown here</string>
+    <string name="verification_result_awaited_status">Pending</string>
 </resources>
