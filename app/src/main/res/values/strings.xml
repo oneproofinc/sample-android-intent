@@ -8,6 +8,7 @@
     <string name="result_label">Result:</string>
     <string name="no_result_received">No result received</string>
     <string name="no_status">No status</string>
+
     <string name="welcome_message">Welcome to OneProof Verification</string>
     <string name="welcome_description">Tap the button below to start the verification process</string>
     <string name="verification_result_awaited">Verification Result</string>
