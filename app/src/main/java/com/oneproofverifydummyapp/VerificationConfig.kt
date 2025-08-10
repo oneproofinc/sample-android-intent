@@ -1,11 +1,13 @@
 package com.oneproofverifydummyapp
 
 object VerificationConfig {
-    // Verification app configuration
     const val VERIFICATION_APP_SCHEME = "oneproof://verify"
-    const val VERIFICATION_APP_PACKAGE = "com.oneproof.verify.intent" // Replace with actual package
+    const val VERIFICATION_APP_PACKAGE = "com.oneproof.verify.intent"
     
-        // Data constants
+    const val SCANNER_AV3 = "AV3"
+    const val SCANNER_MOBILE = "Mobile"
+    const val SCANNER_NO_NFC = "NoNFC"
+    
     val NAME_SPACES_JSON = """
         {
             "org.iso.18013.5.1": {
@@ -28,14 +30,13 @@ object VerificationConfig {
     const val ORG_ID = "plfS1eb12zCVVAerNLvRLfqmygzcr7g7"
     const val LICENSE_KEY = "WuSa0hoBiwsrhvVG1A46V9PAcArlbZFH"
     
-    // Intent extras keys
     const val EXTRA_NAME_SPACES_JSON = "nameSpacesJson"
     const val EXTRA_ORG_ID = "orgID"
     const val EXTRA_LICENSE_KEY = "licenseKey"
+    const val EXTRA_SCANNER_INFO = "scannerInfo"
     const val EXTRA_VERIFICATION_RESULT = "verification_result"
     const val EXTRA_VERIFICATION_STATUS = "verification_status"
     
-    // Status constants
     const val STATUS_SUCCESS = "SUCCESS"
     const val STATUS_FAILED = "FAILED"
     const val STATUS_ERROR = "ERROR"

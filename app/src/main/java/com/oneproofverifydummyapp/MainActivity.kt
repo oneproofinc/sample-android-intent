@@ -14,12 +14,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -39,8 +45,8 @@ class MainActivity : ComponentActivity() {
     private var verificationStatus by mutableStateOf("")
     private var isLoading by mutableStateOf(false)
     private var hasReceivedResult by mutableStateOf(false)
+    private var selectedScannerInfo by mutableStateOf(VerificationConfig.SCANNER_AV3)
 
-        // Activity result launcher for handling verification app response
     private val verificationLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -66,7 +72,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-                // Check if we received data from intent (when app is launched by another app)
         val intentResult = intent.getStringExtra(VerificationConfig.EXTRA_VERIFICATION_RESULT)
         val intentStatus = intent.getStringExtra(VerificationConfig.EXTRA_VERIFICATION_STATUS)
         
@@ -89,6 +94,8 @@ class MainActivity : ComponentActivity() {
                         verificationStatus = verificationStatus,
                         isLoading = isLoading,
                         hasReceivedResult = hasReceivedResult,
+                        selectedScannerInfo = selectedScannerInfo,
+                        onScannerSelectionChanged = { scannerInfo -> selectedScannerInfo = scannerInfo },
                         onTriggerVerification = { triggerVerification() }
                     )
                 }
@@ -99,30 +106,27 @@ class MainActivity : ComponentActivity() {
     private fun triggerVerification() {
         isLoading = true
         try {
-            // Create intent to launch verification app
             val intent = Intent().apply {
                 action = Intent.ACTION_VIEW
                  setPackage(VerificationConfig.VERIFICATION_APP_PACKAGE)
 
-                // Add the data as extras
                 putExtra(
                     VerificationConfig.EXTRA_NAME_SPACES_JSON,
                     VerificationConfig.NAME_SPACES_JSON
                 )
                 putExtra(VerificationConfig.EXTRA_ORG_ID, VerificationConfig.ORG_ID)
                 putExtra(VerificationConfig.EXTRA_LICENSE_KEY, VerificationConfig.LICENSE_KEY)
+                putExtra(VerificationConfig.EXTRA_SCANNER_INFO, selectedScannerInfo)
 
-                // Add flags to ensure proper handling
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }
 
             Log.i(
                 "MainActivity",
-                "Triggering verification with orgID: ${VerificationConfig.ORG_ID}"
+                "Triggering verification with orgID: ${VerificationConfig.ORG_ID}, scannerInfo: $selectedScannerInfo"
             )
             Log.i("MainActivity", "NameSpaces JSON: ${VerificationConfig.NAME_SPACES_JSON}")
 
-            // Launch the verification app
             verificationLauncher.launch(intent)
 
         } catch (e: Exception) {
@@ -134,13 +138,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
+@Preview()
 @Composable
 fun MainScreen(
     verificationResult: String,
     verificationStatus: String,
     isLoading: Boolean,
     hasReceivedResult: Boolean,
+    selectedScannerInfo: String,
+    onScannerSelectionChanged: (String) -> Unit,
     onTriggerVerification: () -> Unit
 ) {
     Column(
@@ -151,13 +157,13 @@ fun MainScreen(
         verticalArrangement = Arrangement.Center
     ) {
         if (!hasReceivedResult) {
-            // Welcome Screen
             WelcomeScreen(
                 isLoading = isLoading,
+                selectedScannerInfo = selectedScannerInfo,
+                onScannerSelectionChanged = onScannerSelectionChanged,
                 onTriggerVerification = onTriggerVerification
             )
         } else {
-            // Result Screen
             ResultScreen(
                 verificationResult = verificationResult,
                 verificationStatus = verificationStatus,
@@ -171,6 +177,8 @@ fun MainScreen(
 @Composable
 fun WelcomeScreen(
     isLoading: Boolean,
+    selectedScannerInfo: String,
+    onScannerSelectionChanged: (String) -> Unit,
     onTriggerVerification: () -> Unit
 ) {
     Column(
@@ -180,7 +188,6 @@ fun WelcomeScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Welcome Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
@@ -194,14 +201,12 @@ fun WelcomeScreen(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Welcome Icon/Logo placeholder
                 Text(
                     text = "🔐",
                     fontSize = 64.sp,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
-                // Welcome Title
                 Text(
                     text = stringResource(R.string.welcome_message),
                     fontSize = 24.sp,
@@ -210,7 +215,6 @@ fun WelcomeScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
                 
-                // Welcome Description
                 Text(
                     text = stringResource(R.string.welcome_description),
                     fontSize = 14.sp,
@@ -219,7 +223,112 @@ fun WelcomeScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 
-                // Start Verification Button
+                Text(
+                    text = stringResource(R.string.scanner_selection_title),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = { onScannerSelectionChanged(VerificationConfig.SCANNER_AV3) },
+                            modifier = Modifier.weight(1f).height(40.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selectedScannerInfo == VerificationConfig.SCANNER_AV3) 
+                                    MaterialTheme.colorScheme.primary 
+                                else 
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            border = BorderStroke(
+                                width = if (selectedScannerInfo == VerificationConfig.SCANNER_AV3) 2.dp else 1.dp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_AV3)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.outline
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.scanner_av3),
+                                fontSize = 12.sp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_AV3) 
+                                    MaterialTheme.colorScheme.onPrimary 
+                                else 
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        
+                        Button(
+                            onClick = { onScannerSelectionChanged(VerificationConfig.SCANNER_MOBILE) },
+                            modifier = Modifier.weight(1f).height(40.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selectedScannerInfo == VerificationConfig.SCANNER_MOBILE) 
+                                    MaterialTheme.colorScheme.primary 
+                                else 
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            border = BorderStroke(
+                                width = if (selectedScannerInfo == VerificationConfig.SCANNER_MOBILE) 2.dp else 1.dp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_MOBILE)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.outline
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.scanner_mobile),
+                                fontSize = 12.sp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_MOBILE) 
+                                    MaterialTheme.colorScheme.onPrimary 
+                                else 
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Button(
+                            onClick = { onScannerSelectionChanged(VerificationConfig.SCANNER_NO_NFC) },
+                            modifier = Modifier.width(120.dp).height(40.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (selectedScannerInfo == VerificationConfig.SCANNER_NO_NFC) 
+                                    MaterialTheme.colorScheme.primary 
+                                else 
+                                    MaterialTheme.colorScheme.surfaceVariant
+                            ),
+                            border = BorderStroke(
+                                width = if (selectedScannerInfo == VerificationConfig.SCANNER_NO_NFC) 2.dp else 1.dp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_NO_NFC)
+                                    MaterialTheme.colorScheme.primary
+                                else
+                                    MaterialTheme.colorScheme.outline
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.scanner_no_nfc),
+                                fontSize = 12.sp,
+                                color = if (selectedScannerInfo == VerificationConfig.SCANNER_NO_NFC) 
+                                    MaterialTheme.colorScheme.onPrimary 
+                                else 
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
                 Button(
                     onClick = onTriggerVerification,
                     enabled = !isLoading,
@@ -236,7 +345,6 @@ fun WelcomeScreen(
             }
         }
         
-        // Verification Result Awaited Card
         VerificationResultAwaitedCard()
     }
 }
@@ -253,7 +361,6 @@ fun ResultScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Verification Result Display
         VerificationResultScreen(
             verificationResult = verificationResult,
             verificationStatus = verificationStatus
@@ -261,7 +368,6 @@ fun ResultScreen(
         
         Spacer(modifier = Modifier.height(32.dp))
         
-        // Verify Again Button
         Button(
             onClick = onTriggerVerification,
             enabled = !isLoading,
@@ -302,14 +408,12 @@ fun VerificationResultScreen(
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Status Icon
             Text(
                 text = if (isSuccess) "✅" else "❌",
                 fontSize = 48.sp,
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             
-            // Status Text
             Text(
                 text = statusText,
                 fontSize = 24.sp,
@@ -319,7 +423,6 @@ fun VerificationResultScreen(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
             
-            // Divider
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -327,7 +430,6 @@ fun VerificationResultScreen(
                     .padding(vertical = 16.dp)
             )
             
-            // Result Label
             Text(
                 text = stringResource(R.string.result_label),
                 fontSize = 18.sp,
@@ -337,7 +439,6 @@ fun VerificationResultScreen(
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
-            // Result Content
             Text(
                 text = verificationResult,
                 fontSize = 16.sp,
@@ -365,14 +466,12 @@ fun VerificationResultAwaitedCard() {
                 .padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Status Icon
             Text(
                 text = "⏳",
                 fontSize = 32.sp,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             
-            // Title
             Text(
                 text = stringResource(R.string.verification_result_awaited),
                 fontSize = 18.sp,
@@ -382,7 +481,6 @@ fun VerificationResultAwaitedCard() {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
-            // Status
             Text(
                 text = stringResource(R.string.verification_result_awaited_status),
                 fontSize = 16.sp,
@@ -392,7 +490,6 @@ fun VerificationResultAwaitedCard() {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             
-            // Description
             Text(
                 text = stringResource(R.string.verification_result_awaited_desc),
                 fontSize = 14.sp,

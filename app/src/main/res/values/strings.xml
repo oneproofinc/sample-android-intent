@@ -10,8 +10,14 @@
     <string name="no_status">No status</string>
 
     <string name="welcome_message">Welcome to OneProof Verification</string>
-    <string name="welcome_description">Tap the button below to start the verification process</string>
+    <string name="welcome_description">Select your scanner type and tap the button below to start the verification process</string>
     <string name="verification_result_awaited">Verification Result</string>
     <string name="verification_result_awaited_desc">Verification result is shown here</string>
     <string name="verification_result_awaited_status">Pending</string>
+    
+    <!-- Scanner selection strings -->
+    <string name="scanner_selection_title">Select Scanner Type</string>
+    <string name="scanner_av3">Av3 Scanner</string>
+    <string name="scanner_mobile">Mobile Scanner</string>
+    <string name="scanner_no_nfc">No NFC Scanner</string>
 </resources>
