@@ -40,8 +40,8 @@ object VerificationConfig {
         }
     """.trimIndent()
     
-    const val ORG_ID = "plfS1eb12zCVVAerNLvRLfqmygzcr7g7"
-    const val LICENSE_KEY = "WuSa0hoBiwsrhvVG1A46V9PAcArlbZFH"
+    const val ORG_ID = "palceholder"
+    const val LICENSE_KEY = "placeholder"
     
     const val EXTRA_NAME_SPACES_JSON = "nameSpacesJson"
     const val EXTRA_ORG_ID = "orgID"
