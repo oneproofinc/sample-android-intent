@@ -29,11 +29,13 @@ object VerificationConfig {
     
     const val ORG_ID = "plfS1eb12zCVVAerNLvRLfqmygzcr7g7"
     const val LICENSE_KEY = "WuSa0hoBiwsrhvVG1A46V9PAcArlbZFH"
-    
+    const val packageName = "com.oneproofverifydummyapp"
+
     const val EXTRA_NAME_SPACES_JSON = "nameSpacesJson"
     const val EXTRA_ORG_ID = "orgID"
     const val EXTRA_LICENSE_KEY = "licenseKey"
     const val EXTRA_SCANNER_INFO = "scannerInfo"
+    const val EXTRA_PACKAGE_NAME = "packageName"
     const val EXTRA_VERIFICATION_RESULT = "verification_result"
     const val EXTRA_VERIFICATION_STATUS = "verification_status"
     
