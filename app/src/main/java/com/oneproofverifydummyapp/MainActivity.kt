@@ -119,6 +119,8 @@ class MainActivity : ComponentActivity() {
                 putExtra(VerificationConfig.EXTRA_SCANNER_INFO, selectedScannerInfo)
                 //this new variable added for app packageName
                 putExtra(VerificationConfig.EXTRA_PACKAGE_NAME, VerificationConfig.packageName)
+                putExtra(VerificationConfig.EXTRA_DEVICE_ENGAGEMENT, "QRCode")
+
 
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             }

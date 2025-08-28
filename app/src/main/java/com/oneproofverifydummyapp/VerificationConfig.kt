@@ -36,6 +36,7 @@ object VerificationConfig {
     const val EXTRA_LICENSE_KEY = "licenseKey"
     const val EXTRA_SCANNER_INFO = "scannerInfo"
     const val EXTRA_PACKAGE_NAME = "packageName"
+    const val EXTRA_DEVICE_ENGAGEMENT = "deviceEngagement"
     const val EXTRA_VERIFICATION_RESULT = "verification_result"
     const val EXTRA_VERIFICATION_STATUS = "verification_status"
     
